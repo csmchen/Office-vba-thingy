@@ -1,0 +1,37 @@
+'author csmchen
+Sub InsertMultiPdfFile()
+    Dim prs As Presentation
+    Dim sld As Slide
+    Dim sp As Shape
+    Dim fp As FileDialog
+    Dim s
+    Dim lft As Double
+    Dim ly As CustomLayout
+    Dim fileName As String
+    Dim shortName As String
+    
+    Set prs = ActivePresentation
+    Set fp = Application.FileDialog(msoFileDialogFilePicker)
+    lft = 0
+    With fp
+        .AllowMultiSelect = True
+        .Filters.Clear
+        .Title = "Select"
+        If .Show Then
+            Set ly = prs.Slides(1).CustomLayout
+            Set sld = prs.Slides.AddSlide(prs.Slides.Count + 1, ly)
+
+            For Each s In .SelectedItems
+                fileName = Dir(s)
+                shortName = Left(fileName, InStrRev(fileName, ".") - 1)
+                sld.Shapes.AddOLEObject Left:=lft, fileName:=s, Link:=False, DisplayAsIcon:=True, IconLabel:=shortName
+                lft = lft + 100
+            Next
+        End If
+    End With
+    Set prs = Nothing
+    Set ly = Nothing
+    Set sld = Nothing
+    MsgBox "Completed"
+End Sub
+
